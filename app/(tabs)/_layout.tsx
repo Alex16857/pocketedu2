@@ -29,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
+          title: 'PocketEdu',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
@@ -50,10 +50,25 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Tab Two',
+          title: 'Majors',
+          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="top-universities"
+        options={{
+          title: 'Top Universities',
+          tabBarIcon: ({ color }) => <TabBarIcon name="graduation-cap" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="[slug].tsx"
+        options={{
+          title: 'university.name',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
     </Tabs>
+    
   );
 }
