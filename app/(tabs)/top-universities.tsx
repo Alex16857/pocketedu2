@@ -1,27 +1,26 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Link } from 'expo-router';
 import { topSchools } from '../../data/topSchools';
 import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 
-function getAverageGPA(avgGPA: string | null): number {
-  if (!avgGPA || avgGPA === 'N/A') return 0;
-  if (avgGPA.includes('–') || avgGPA.includes('-')) {
-    const parts = avgGPA.split(/–|-/).map(s => s.trim());
-    if (parts.length === 2) {
-      const low = Number(parts[0]);
-      const high = Number(parts[1]);
-      if (!isNaN(low) && !isNaN(high)) {
-        return (low + high) / 2;
-      }
-    }
+function getAverageSAT(sat25th: string, sat75th: string): number {
+  const low = Number(sat25th);
+  const high = Number(sat75th);
+  if (!isNaN(low) && !isNaN(high)) {
+    return Math.round((low + high) / 2);
+  } else if (!isNaN(low)) {
+    return low;
+  } else if (!isNaN(high)) {
+    return high;
+  } else {
+    return 0;
   }
-  const value = Number(avgGPA);
-  return isNaN(value) ? 0 : value;
 }
 
 export default function TopUniversities() {
   const [sortBy, setSortBy] = useState('rank');
+  const [reverse, setReverse] = useState(false);
 
   if (!topSchools || !Array.isArray(topSchools)) {
     return (
@@ -34,21 +33,11 @@ export default function TopUniversities() {
 
   let sortedSchools = [...topSchools];
   if (sortBy === 'rank') {
-    sortedSchools.sort((a, b) => a.rank - b.rank);
+    sortedSchools.sort((a, b) => reverse ? b.rank - a.rank : a.rank - b.rank);
   } else if (sortBy === 'sat25th') {
-    sortedSchools.sort((a, b) => Number(b.sat25th) - Number(a.sat25th));
+    sortedSchools.sort((a, b) => reverse ? Number(a.sat25th) - Number(b.sat25th) : Number(b.sat25th) - Number(a.sat25th));
   } else if (sortBy === 'sat75th') {
-    sortedSchools.sort((a, b) => Number(b.sat75th) - Number(a.sat75th));
-  } else if (sortBy === 'avgGPA') {
-    sortedSchools.sort((a, b) => {
-      const gpaA = getAverageGPA(a.avgGPA);
-      const gpaB = getAverageGPA(b.avgGPA);
-      // Put null values at the bottom
-      if (gpaA === 0 && gpaB === 0) return 0;
-      if (gpaA === 0) return 1;
-      if (gpaB === 0) return -1;
-      return gpaB - gpaA;
-    });
+    sortedSchools.sort((a, b) => reverse ? Number(a.sat75th) - Number(b.sat75th) : Number(b.sat75th) - Number(a.sat75th));
   } else if (sortBy === 'acceptanceRate') {
     sortedSchools.sort((a, b) => {
       const rateA = a.acceptanceRate ? parseFloat(a.acceptanceRate.replace('%', '')) : 0;
@@ -57,22 +46,46 @@ export default function TopUniversities() {
       if (rateA === 0 && rateB === 0) return 0;
       if (rateA === 0) return 1;
       if (rateB === 0) return -1;
-      return rateA - rateB; // Lower acceptance rate first (more selective)
+      return reverse ? rateB - rateA : rateA - rateB; // Lower acceptance rate first (more selective)
+    });
+  } else if (sortBy === 'employability') {
+    sortedSchools.sort((a, b) => {
+      // Parse percentage strings, handle "DNC" and null values
+      const parsePercent = (value: string | null) => {
+        if (!value || value === "DNC") return 0;
+        return parseFloat(value.replace('%', ''));
+      };
+      
+      const percentA = parsePercent(a.internationalStudentPercent);
+      const percentB = parsePercent(b.internationalStudentPercent);
+      
+      // Put null/DNC values at the bottom
+      if (percentA === 0 && percentB === 0) return 0;
+      if (percentA === 0) return 1;
+      if (percentB === 0) return -1;
+      
+      return reverse ? percentB - percentA : percentA - percentB;
     });
   }
 
   const renderStatistic = (university: any) => {
     switch (sortBy) {
       case 'rank':
-        return <Text style={styles.statistic}>Rank: #{university.rank}</Text>;
+        return (
+          <>
+            <Text style={styles.statistic}>Rank: #{university.rank}</Text>
+            <Text style={styles.statistic}>Avg SAT: {getAverageSAT(university.sat25th, university.sat75th)}</Text>
+            <Text style={styles.statistic}>Acceptance Rate: {university.acceptanceRate || "N/A"}</Text>
+          </>
+        );
       case 'sat25th':
         return <Text style={styles.statistic}>SAT 25th Percentile: {university.sat25th === "N/A" ? "N/A" : university.sat25th}</Text>;
       case 'sat75th':
         return <Text style={styles.statistic}>SAT 75th Percentile: {university.sat75th === "N/A" ? "N/A" : university.sat75th}</Text>;
-      case 'avgGPA':
-        return <Text style={styles.statistic}>GPA: {university.avgGPA || "N/A"}</Text>;
       case 'acceptanceRate':
         return <Text style={styles.statistic}>Acceptance Rate: {university.acceptanceRate || "N/A"}</Text>;
+      case 'employability':
+        return <Text style={styles.statistic}>International Students: {university.internationalStudentPercent || "N/A"}</Text>;
       default:
         return <Text style={styles.statistic}>Rank: #{university.rank}</Text>;
     }
@@ -90,12 +103,16 @@ export default function TopUniversities() {
         <Picker.Item label="Ranking" value="rank" />
         <Picker.Item label="SAT 25th Percentile" value="sat25th" />
         <Picker.Item label="SAT 75th Percentile" value="sat75th" />
-        <Picker.Item label="Average GPA" value="avgGPA" />
         <Picker.Item label="Acceptance Rate" value="acceptanceRate" />
+        <Picker.Item label="International Students" value="employability" />
       </Picker>
+      <View style={styles.buttonContainer}>
+        <Text style={styles.button} onPress={() => setReverse(!reverse)}>
+          {reverse ? '↑ Ascending' : '↓ Descending'}
+        </Text>
+      </View>
       {sortedSchools.map((university) => (
         <Link
-          key={university.slug}
           href={`/${university.slug}`}
           asChild
         >
@@ -105,7 +122,7 @@ export default function TopUniversities() {
             </View>
             <View style={styles.universityInfo}>
               <Text style={styles.universityName}>{university.name}</Text>
-              <Text style={styles.location}>{university.location}</Text>
+              <Text style={styles.location}>{university.city}, {university.state}</Text>
               {renderStatistic(university)}
             </View>
           </View>
@@ -183,5 +200,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#007AFF',
     fontWeight: '500',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  button: {
+    padding: 12,
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 }); 
