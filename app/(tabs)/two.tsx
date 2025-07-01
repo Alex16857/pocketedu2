@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
+import { Text, View } from '@/components/Themed';
 import { Link } from 'expo-router';
 import { topSchools } from '../../data/topSchools';
 
@@ -30,9 +31,9 @@ export default function Majors() {
             </View>
             <View style={styles.universityInfo}>
               <Text style={styles.universityName}>{university.name}</Text>
-              <Text style={styles.location}>{university.location}</Text>
+              <Text style={styles.location}>{university.city}, {university.state}</Text>
               <Text style={styles.satScore}>SAT 25th: {university.sat25th} | 75th: {university.sat75th}</Text>
-              <Text style={styles.gpaScore}>GPA: {university.avgGPA}</Text>
+              <Text style={styles.gpaScore}>GPA: {university.acceptanceRate}</Text>
             </View>
           </View>
         </Link>
@@ -44,7 +45,7 @@ export default function Majors() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f0efec',
     padding: 16,
   },
   header: {

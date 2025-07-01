@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
-import { View, Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Text, View } from '@/components/Themed';
 import { topSchools, University } from '../data/topSchools';
 
 export default function UniversityPage() {
@@ -19,10 +20,11 @@ export default function UniversityPage() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{university.name}</Text>
-      <Text style={styles.detail}>Location: {university.location}</Text>
+      <Text style={styles.detail}>Location: {university.city}, {university.state}</Text>
       <Text style={styles.detail}>Rank: #{university.rank}</Text>
-      <Text style={styles.detail}>SAT: {university.avgSAT}</Text>
-      <Text style={styles.detail}>GPA: {university.avgGPA}</Text>
+      <Text style={styles.detail}>SAT 25th: {university.sat25th} | 75th: {university.sat75th}</Text>
+      <Text style={styles.detail}>Acceptance Rate: {university.acceptanceRate}</Text>
+      <Text style={styles.detail}>International Student Percent: {university.internationalStudentPercent}</Text>
     </View>
   );
 }
@@ -30,7 +32,7 @@ export default function UniversityPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e8e8e8',
+    backgroundColor: '#f0efec',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,

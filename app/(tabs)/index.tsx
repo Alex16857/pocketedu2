@@ -1,22 +1,25 @@
 import { router } from 'expo-router';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
+import { Pressable, StyleSheet, Image } from 'react-native';
+import { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
 
 export default function Home() {
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/pocketedu.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <Text style={styles.title}>Welcome to PocketEdu!</Text>
+      <View style={styles.logoCard}>
+        <Image
+          source={require('../../assets/images/pocketedu.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </View>
       <Text style={styles.subtitle}>Discover top U.S. universities and their stats.</Text>
-      <Pressable style={styles.link} onPress={() => router.push('/top-universities')}>
-        <Text style={styles.linkText}>Go to University List</Text>
+      <Pressable style={styles.button} onPress={() => router.push('/top-universities')}>
+        <Text style={styles.buttonText}>Go to University List</Text>
       </Pressable>
-      <Pressable style={[styles.link, styles.secondLink]} onPress={() => router.push('/two')}>
-        <Text style={styles.linkText}>Go to Majors</Text>
+      <Pressable style={[styles.button, styles.secondButton]} onPress={() => router.push('/two')}>
+        <Text style={styles.buttonText}>Go to Majors</Text>
       </Pressable>
     </View>
   );
@@ -24,43 +27,56 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    backgroundColor: '#e8e8e8', 
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.light.background,
     padding: 24,
   },
-  logo: {
-    width: 320,
-    height: 320,
-    marginBottom: 0,
+  logoCard: {
+    backgroundColor: '#fff',
+    borderRadius: 24,
+    padding: 24,
+    marginBottom: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  title: {
-    fontSize: 28, 
-    fontWeight: 'bold', 
-    marginTop: 20,
-    marginBottom: 16, 
-    textAlign: 'center',
+  logo: {
+    width: 220,
+    height: 120,
   },
   subtitle: {
-    fontSize: 18, 
-    marginBottom: 32, 
+    fontSize: 18,
+    color: Colors.light.text,
     textAlign: 'center',
-    color: '#666',
+    marginBottom: 32,
+    fontFamily: 'Lato',
   },
-  link: {
-    backgroundColor: '#6f8faf', 
-    paddingVertical: 12, 
-    paddingHorizontal: 24, 
-    borderRadius: 8,
+  button: {
+    backgroundColor: Colors.light.primary,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 12,
     marginBottom: 16,
+    alignItems: 'center',
+    width: 240,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.10,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  secondLink: {
+  secondButton: {
     marginBottom: 0,
   },
-  linkText: {
-    color: '#fff', 
-    fontSize: 18, 
-    fontWeight: '600',
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: 'LatoBold',
+    letterSpacing: 0.5,
   },
 });

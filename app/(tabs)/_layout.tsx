@@ -22,6 +22,8 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarLabelStyle: { fontFamily: 'Lato' },
+        headerTitleStyle: { fontFamily: 'Lato' },
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
@@ -59,13 +61,6 @@ export default function TabLayout() {
         options={{
           title: 'Top Universities',
           tabBarIcon: ({ color }) => <TabBarIcon name="graduation-cap" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="[slug].tsx"
-        options={{
-          title: 'university.name',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
     </Tabs>
